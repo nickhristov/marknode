@@ -1,0 +1,17 @@
+apply plugin: "jacoco"
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
+    }
+}
+
+jacocoTestReport.doFirst {
+    classDirectories = files("$buildDir/classes/main/org/marknode")
+}
