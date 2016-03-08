@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 apply plugin: 'maven'
 apply plugin: 'signing'
 
 archivesBaseName = 'marknode-test'
 
 dependencies {
-    // Google Web Toolkit
-    compile 'com.google.gwt:gwt-user:2.7.0'
-    compile 'com.google.guava:guava-gwt:18.0'
+    compile 'org.testng:testng:6.8.13'
 }
 
 jar.doFirst {

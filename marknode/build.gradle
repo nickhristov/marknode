@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 apply plugin: 'maven'
 apply plugin: 'signing'
 
@@ -23,6 +23,12 @@ dependencies {
     // Google Web Toolkit
     compile 'com.google.gwt:gwt-user:2.7.0'
     compile 'com.google.guava:guava-gwt:18.0'
+
+    testCompile(project(':marknode-test'))
+
+//    testCompile 'commons-io:commons-io:2.4'
+    testCompile 'org.openjdk.jmh:jmh-core:1.11.3'
+    testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
 }
 
 jar.doFirst {
