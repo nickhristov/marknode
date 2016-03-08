@@ -10,12 +10,6 @@ import java.util.List;
 
 public abstract class SpecTestCase extends RenderingTestCase {
 
-  protected final SpecExample example;
-
-  public SpecTestCase(SpecExample example) {
-    this.example = example;
-  }
-
   @DataProvider(name = "specData")
   public static Object[][] data() {
     List<SpecExample> examples = SpecReader.readExamples();
@@ -27,9 +21,8 @@ public abstract class SpecTestCase extends RenderingTestCase {
     return data;
   }
 
-  @Test
-  public void testHtmlRendering() {
+  @Test(dataProvider = "specData")
+  public void testHtmlRendering(SpecExample example) {
     assertRendering(example.getSource(), example.getHtml());
   }
-
 }

@@ -15,16 +15,11 @@ public class SpecCoreTest extends SpecTestCase {
 
   private static final Parser PARSER = Parser.builder().build();
   // The spec says URL-escaping is optional, but the examples assume that it's enabled.
-  private static final HtmlRenderer
-      RENDERER =
+  private static final HtmlRenderer RENDERER =
       HtmlRenderer.builder().percentEncodeUrls(true).build();
 
-  public SpecCoreTest(SpecExample example) {
-    super(example);
-  }
-
-  @Test
-  public void testTextNodesContiguous() {
+  @Test(dataProvider = "specData")
+  public void testTextNodesContiguous(SpecExample example) {
     final String source = example.getSource();
     Node node = PARSER.parse(source);
     node.accept(new AbstractVisitor() {

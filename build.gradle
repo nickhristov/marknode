@@ -84,14 +84,14 @@ subprojects {
 
             // force certain versions of dependencies (including transitive)
             //  *append new forced modules:
-            force 'com.google.guava:guava:18.0',
+            force 'com.google.guava:guava:19.0',
                   'com.google.code.findbugs:jsr305:2.0.3'
         }
     }
 
     dependencies {
         // utility dependencies
-        compile 'com.google.guava:guava:18.0'
+        compile 'com.google.guava:guava:19.0'
 
         compile 'com.google.code.findbugs:annotations:2.0.3'
         compile 'com.google.code.findbugs:jsr305:2.0.3'
@@ -100,6 +100,12 @@ subprojects {
         testCompile 'org.testng:testng:6.8.13'
         testCompile "org.mockito:mockito-core:1.10.19"
     }
+
+    ext.javadocLinks = [
+            "http://docs.oracle.com/javase/7/docs/api/",
+            "http://docs.oracle.com/javaee/7/api/",
+            "http://google.github.io/guava/releases/19.0/api/docs/"
+    ] as String[]
 }
 
 build {

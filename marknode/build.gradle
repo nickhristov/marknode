@@ -22,7 +22,7 @@ archivesBaseName = 'marknode'
 dependencies {
     // Google Web Toolkit
     compile 'com.google.gwt:gwt-user:2.7.0'
-    compile 'com.google.guava:guava-gwt:18.0'
+    compile 'com.google.guava:guava-gwt:19.0'
 
     testCompile(project(':marknode-test'))
 
@@ -45,7 +45,16 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 task aggregateJavadocs(type: Javadoc) {
+    options.memberLevel = JavadocMemberLevel.PROTECTED
+    options.author = true
+    options.header = project.name
+    options.links(project.ext.javadocLinks)
+    if (JavaVersion.current().isJava8Compatible()) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
     source = sourceSets.main.allJava
+    classpath += sourceSets.main.runtimeClasspath
     failOnError = false
 }
 
