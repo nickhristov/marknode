@@ -1,14 +1,21 @@
 package org.marknode.internal;
 
-import org.marknode.node.Document;
-import org.marknode.node.Node;
-import org.marknode.parser.block.BlockParser;
-import org.marknode.parser.block.BlockParserFactory;
-import org.marknode.parser.block.ParserState;
 import org.marknode.internal.util.Parsing;
 import org.marknode.internal.util.Substring;
-import org.marknode.node.*;
-import org.marknode.parser.block.*;
+import org.marknode.node.Block;
+import org.marknode.node.BlockQuote;
+import org.marknode.node.Document;
+import org.marknode.node.FencedCodeBlock;
+import org.marknode.node.ListBlock;
+import org.marknode.node.ListItem;
+import org.marknode.node.Node;
+import org.marknode.node.Paragraph;
+import org.marknode.parser.block.BlockContinue;
+import org.marknode.parser.block.BlockParser;
+import org.marknode.parser.block.BlockParserFactory;
+import org.marknode.parser.block.BlockStart;
+import org.marknode.parser.block.MatchedBlockParser;
+import org.marknode.parser.block.ParserState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,8 +139,8 @@ public class DocumentParser implements ParserState {
   }
 
   /**
-   * Analyze a line of text and update the document appropriately. We parse markdown text by calling this on each
-   * line of input, then finalizing the document.
+   * Analyze a line of text and update the document appropriately. We parse markdown text by
+   * calling this on each line of input, then finalizing the document.
    */
   private void incorporateLine(CharSequence ln) {
     line = Parsing.prepareLine(ln);

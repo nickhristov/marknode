@@ -1,10 +1,10 @@
 package org.marknode.parser;
 
 import org.marknode.Extension;
-import org.marknode.parser.block.BlockParserFactory;
 import org.marknode.internal.DocumentParser;
 import org.marknode.internal.InlineParserImpl;
 import org.marknode.node.Node;
+import org.marknode.parser.block.BlockParserFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +57,8 @@ public class Parser {
    * @return the root node
    */
   public Node parse(String input) {
-    InlineParserImpl
-        inlineParser =
-        new InlineParserImpl(specialCharacters, delimiterCharacters, delimiterProcessors);
+    InlineParserImpl inlineParser = new InlineParserImpl(
+        specialCharacters, delimiterCharacters, delimiterProcessors);
     DocumentParser documentParser = new DocumentParser(blockParserFactories, inlineParser);
     Node document = documentParser.parse(input);
     return postProcess(document);
