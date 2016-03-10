@@ -176,8 +176,7 @@ public class DocumentParser implements ParserState {
       }
     }
 
-    List<BlockParser>
-        unmatchedBlockParsers =
+    List<BlockParser> unmatchedBlockParsers =
         new ArrayList<>(activeBlockParsers.subList(matches, activeBlockParsers.size()));
     BlockParser lastMatchedBlockParser = activeBlockParsers.get(matches - 1);
     BlockParser blockParser = lastMatchedBlockParser;
@@ -185,22 +184,21 @@ public class DocumentParser implements ParserState {
 
     // Check to see if we've hit 2nd blank line; if so break out of list:
     if (isBlank() && isLastLineBlank(blockParser.getBlock())) {
-      List<BlockParser>
-          matchedBlockParsers = new ArrayList<>(activeBlockParsers.subList(0, matches));
+      List<BlockParser> matchedBlockParsers = new ArrayList<>(
+          activeBlockParsers.subList(0, matches));
       breakOutOfLists(matchedBlockParsers);
     }
 
     // Unless last matched container is a code block, try new container starts,
     // adding children to the last matched container:
-    boolean
-        tryBlockStarts =
-        blockParser.getBlock() instanceof Paragraph || blockParser.isContainer();
+    boolean tryBlockStarts = blockParser.getBlock() instanceof Paragraph ||
+                             blockParser.isContainer();
     while (tryBlockStarts) {
       findNextNonSpace();
 
       // this is a little performance optimization:
-      if (isBlank() || (indent < IndentedCodeBlockParser.INDENT && Parsing
-          .isLetter(line, nextNonSpace))) {
+      if (isBlank() || (indent < IndentedCodeBlockParser.INDENT &&
+                        Parsing.isLetter(line, nextNonSpace))) {
         setNewIndex(nextNonSpace);
         break;
       }
@@ -236,8 +234,7 @@ public class DocumentParser implements ParserState {
     // appropriate block.
 
     // First check for a lazy paragraph continuation:
-    if (!allClosed && !isBlank() &&
-        getActiveBlockParser() instanceof ParagraphParser) {
+    if (!allClosed && !isBlank() && getActiveBlockParser() instanceof ParagraphParser) {
       // lazy paragraph continuation
       addLine();
 
@@ -335,9 +332,9 @@ public class DocumentParser implements ParserState {
   }
 
   /**
-   * Finalize a block. Close it and do any necessary postprocessing, e.g. creating string_content from strings,
-   * setting the 'tight' or 'loose' status of a list, and parsing the beginnings of paragraphs for reference
-   * definitions.
+   * Finalize a block. Close it and do any necessary postprocessing, e.g. creating string_content
+   * from strings, setting the 'tight' or 'loose' status of a list, and parsing the beginnings of
+   * paragraphs for reference definitions.
    */
   private void finalize(BlockParser blockParser) {
     if (getActiveBlockParser() == blockParser) {
@@ -401,8 +398,9 @@ public class DocumentParser implements ParserState {
   }
 
   /**
-   * Break out of all containing lists, resetting the tip of the document to the parent of the highest list,
-   * and finalizing all the lists. (This is used to implement the "two blank lines break of of all lists" feature.)
+   * Break out of all containing lists, resetting the tip of the document to the parent of
+   * the highest list, and finalizing all the lists. (This is used to implement the "two blank
+   * lines break of of all lists" feature.)
    */
   private void breakOutOfLists(List<BlockParser> blockParsers) {
     int lastList = -1;
@@ -427,8 +425,8 @@ public class DocumentParser implements ParserState {
   }
 
   /**
-   * Add block of type tag as a child of the tip. If the tip can't  accept children, close and finalize it and try
-   * its parent, and so on til we find a block that can accept children.
+   * Add block of type tag as a child of the tip. If the tip can't accept children, close and
+   * finalize it and try its parent, and so on til we find a block that can accept children.
    */
   private <T extends BlockParser> T addChild(T blockParser) {
     while (!getActiveBlockParser().canContain(blockParser.getBlock())) {

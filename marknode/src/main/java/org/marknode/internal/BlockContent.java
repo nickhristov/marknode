@@ -2,32 +2,32 @@ package org.marknode.internal;
 
 class BlockContent {
 
-    private final StringBuilder sb;
+  private final StringBuilder sb;
 
-    private int lineCount = 0;
+  private int lineCount = 0;
 
-    public BlockContent() {
-        sb = new StringBuilder();
+  public BlockContent() {
+    sb = new StringBuilder();
+  }
+
+  public BlockContent(String content) {
+    sb = new StringBuilder(content);
+  }
+
+  public void add(CharSequence line) {
+    if (lineCount != 0) {
+      sb.append('\n');
     }
+    sb.append(line);
+    lineCount++;
+  }
 
-    public BlockContent(String content) {
-        sb = new StringBuilder(content);
-    }
+  public boolean hasSingleLine() {
+    return lineCount == 1;
+  }
 
-    public void add(CharSequence line) {
-        if (lineCount != 0) {
-            sb.append('\n');
-        }
-        sb.append(line);
-        lineCount++;
-    }
-
-    public boolean hasSingleLine() {
-        return lineCount == 1;
-    }
-
-    public String getString() {
-        return sb.toString();
-    }
+  public String getString() {
+    return sb.toString();
+  }
 
 }
