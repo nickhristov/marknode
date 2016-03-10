@@ -17,9 +17,11 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-archivesBaseName = 'marknode'
+archivesBaseName = 'marknode-ext-autolink'
 
 dependencies {
+    compile(project(':marknode'))
+    
     // Google Web Toolkit
     compile 'com.google.gwt:gwt-user:2.7.0'
     compile 'com.google.guava:guava-gwt:19.0'
@@ -86,9 +88,9 @@ uploadArchives {
             }
 
             pom.project {
-                name 'marknode'
+                name 'marknode extension for autolinking'
                 packaging 'jar'
-                description 'MarkNode is a Java implementation of CommonMark.'
+                description 'marknode extension for turning plain URLs and email addresses into links'
                 url 'http://marknode.org/'
 
                 scm {

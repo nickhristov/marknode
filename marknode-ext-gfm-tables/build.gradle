@@ -17,17 +17,16 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-archivesBaseName = 'marknode'
+archivesBaseName = 'marknode-ext-gfm-tables'
 
 dependencies {
+    compile(project(':marknode'))
+    
     // Google Web Toolkit
     compile 'com.google.gwt:gwt-user:2.7.0'
     compile 'com.google.guava:guava-gwt:19.0'
 
     testCompile(project(':marknode-test-util'))
-
-    testCompile 'org.openjdk.jmh:jmh-core:1.11.3'
-    testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
 }
 
 jar.doFirst {
@@ -86,9 +85,9 @@ uploadArchives {
             }
 
             pom.project {
-                name 'marknode'
+                name 'marknode extension for tables'
                 packaging 'jar'
-                description 'MarkNode is a Java implementation of CommonMark.'
+                description 'marknode extension for GFM tables using "|" pipes (GitHub Flavored Markdown)'
                 url 'http://marknode.org/'
 
                 scm {

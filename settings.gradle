@@ -17,4 +17,9 @@
 rootProject.name = 'marknode-parent'
 
 include 'marknode'
-include 'marknode-test'
+include 'marknode-ext-autolink'
+include 'marknode-ext-gfm-strikethrough'
+include 'marknode-ext-gfm-tables'
+include 'marknode-ext-yaml-front-matter'
+include 'marknode-integration-test'
+include 'marknode-test-util'

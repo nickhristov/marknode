@@ -17,7 +17,7 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-archivesBaseName = 'marknode-test'
+archivesBaseName = 'marknode-test-util'
 
 dependencies {
     compile 'org.testng:testng:6.8.13'
@@ -70,9 +70,9 @@ uploadArchives {
             }
 
             pom.project {
-                name 'marknode-test'
+                name 'marknode test utilities'
                 packaging 'jar'
-                description 'MarkNode is a Java implementation of CommonMark.'
+                description 'marknode classes for tests'
                 url 'http://marknode.org/'
 
                 scm {
