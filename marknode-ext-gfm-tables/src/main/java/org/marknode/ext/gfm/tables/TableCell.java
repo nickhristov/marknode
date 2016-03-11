@@ -1,6 +1,6 @@
 package org.marknode.ext.gfm.tables;
 
-import org.commonmark.node.CustomNode;
+import org.marknode.node.CustomNode;
 
 /**
  * Table cell of a {@link TableRow} containing inline nodes.
