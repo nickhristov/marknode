@@ -30,6 +30,24 @@ dependencies {
     testCompile 'org.pegdown:pegdown:1.5.0'
     testCompile 'org.openjdk.jmh:jmh-core:1.11.3'
     testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
+
+    testCompile 'commons-io:commons-io:2.4'
+
+    // logging related
+    testCompile 'org.slf4j:slf4j-api:1.7.6'
+    testCompile 'ch.qos.logback:logback-core:1.1.1'
+    testCompile 'ch.qos.logback:logback-classic:1.1.1'
+
+    /*
+      This is required by logback confitional processing, for more info please
+      see: http://logback.qos.ch/setup.html#janino
+
+      The org.codehaus.janino:commons-compiler:2.6.1 dependency will be
+      automatically pulled in by Maven's transitivity rules
+    */
+    testCompile 'org.codehaus.janino:janino:2.6.1'
+    // java mail logging
+    testCompile 'javax.mail:mail:1.4.5'
 }
 
 jar.doFirst {
