@@ -104,7 +104,8 @@ subprojects {
     ext.javadocLinks = [
             "http://docs.oracle.com/javase/7/docs/api/",
             "http://docs.oracle.com/javaee/7/api/",
-            "http://google.github.io/guava/releases/19.0/api/docs/"
+            "http://google.github.io/guava/releases/19.0/api/docs/",
+            "http://testng.org/javadocs/"
     ] as String[]
 }
 
