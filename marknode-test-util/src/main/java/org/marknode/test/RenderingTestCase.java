@@ -12,7 +12,7 @@ public abstract class RenderingTestCase {
     // include source for better assertion errors
     String expected = showTabs(expectedHtml + "\n\n" + source);
     String actual = showTabs(html + "\n\n" + source);
-    assertEquals(expected, actual);
+    assertEquals(actual, expected);
   }
 
   private static String showTabs(String s) {

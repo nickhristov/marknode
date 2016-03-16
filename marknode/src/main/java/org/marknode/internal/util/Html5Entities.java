@@ -10,16 +10,14 @@ import static org.marknode.internal.util.EntitiesProperties.getEntities;
 public class Html5Entities {
 
   private static final Map<String, String> NAMED_CHARACTER_REFERENCES = getEntities();
-//  private static final Pattern NUMERIC_PATTERN = Pattern.compile("^&#[Xx]?");
 
   public static String entityToString(String input) {
     final RegExp pattern = RegExp.compile("^&#[Xx]?", "g");
     final MatchResult matcher = pattern.exec(input);
     boolean matchFound = matcher != null; // equivalent to regExp.test(inputStr);
 
-//    Matcher matcher = NUMERIC_PATTERN.matcher(input);
     if (matchFound) {
-      int matcherEnd = input.length() - (matcher.getIndex() + matcher.getGroup(0).length());
+      int matcherEnd = matcher.getIndex() + matcher.getGroup(0).length();
       int base = matcherEnd == 2 ? 10 : 16;
       try {
         int codePoint = Integer
