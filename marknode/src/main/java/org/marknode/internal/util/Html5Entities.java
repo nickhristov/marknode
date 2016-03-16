@@ -1,24 +1,29 @@
 package org.marknode.internal.util;
 
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
+
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.marknode.internal.util.EntitiesProperties.getEntities;
 
 public class Html5Entities {
 
   private static final Map<String, String> NAMED_CHARACTER_REFERENCES = getEntities();
-  private static final Pattern NUMERIC_PATTERN = Pattern.compile("^&#[Xx]?");
+//  private static final Pattern NUMERIC_PATTERN = Pattern.compile("^&#[Xx]?");
 
   public static String entityToString(String input) {
-    Matcher matcher = NUMERIC_PATTERN.matcher(input);
+    final RegExp pattern = RegExp.compile("^&#[Xx]?", "g");
+    final MatchResult matcher = pattern.exec(input);
+    boolean matchFound = matcher != null; // equivalent to regExp.test(inputStr);
 
-    if (matcher.find()) {
-      int base = matcher.end() == 2 ? 10 : 16;
+//    Matcher matcher = NUMERIC_PATTERN.matcher(input);
+    if (matchFound) {
+      int matcherEnd = input.length() - (matcher.getIndex() + matcher.getGroup(0).length());
+      int base = matcherEnd == 2 ? 10 : 16;
       try {
         int codePoint = Integer
-            .parseInt(input.substring(matcher.end(), input.length() - 1), base);
+            .parseInt(input.substring(matcherEnd, input.length() - 1), base);
         if (codePoint == 0) {
           return "\uFFFD";
         }
