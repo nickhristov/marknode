@@ -29,8 +29,18 @@ dependencies {
     testCompile(project(':marknode-test-util'))
 }
 
+sourceSets.main.resources {
+    srcDir file('src/main/java') exclude '*/.java'
+}
+sourceSets.test.resources {
+    srcDir file('src/test/java') exclude '*/.java'
+}
+
 jar.doFirst {
     sourceSets.main.java.srcDirs.each {
+        from it
+    }
+    sourceSets.main.resources.srcDirs.each {
         from it
     }
 }

@@ -24,14 +24,27 @@ dependencies {
     compile 'com.google.gwt:gwt-user:2.7.0'
     compile 'com.google.guava:guava-gwt:19.0'
 
+    compile 'org.mvel:mvel2:2.2.7.Final'
+    compile 'commons-io:commons-io:2.4'
+
     testCompile(project(':marknode-test-util'))
 
     testCompile 'org.openjdk.jmh:jmh-core:1.11.3'
     testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.11.3'
 }
 
+sourceSets.main.resources {
+    srcDir file('src/main/java') exclude '*/.java'
+}
+sourceSets.test.resources {
+    srcDir file('src/test/java') exclude '*/.java'
+}
+
 jar.doFirst {
     sourceSets.main.java.srcDirs.each {
+        from it
+    }
+    sourceSets.main.resources.srcDirs.each {
         from it
     }
 }

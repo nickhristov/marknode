@@ -1,0 +1,22 @@
+package org.marknode.internal.util;
+
+import com.google.common.collect.Maps;
+
+import java.util.Map;
+
+/**
+ * @author jiakuanwang
+ */
+public class EntitiesProperties {
+
+  private static Map<String, String> entities = Maps.newHashMap();
+
+  static {
+@foreach{entity : entities}    entities.put("@{entity.name}", "@{entity.value}");
+@end{}    entities.put("NewLine", "\n");
+  }
+
+  public static Map<String, String> getEntities() {
+    return entities;
+  }
+}

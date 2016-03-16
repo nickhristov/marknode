@@ -93,6 +93,23 @@ subprojects {
         // utility dependencies
         compile 'com.google.guava:guava:19.0'
 
+        // logging related
+        compile 'org.slf4j:slf4j-api:1.7.6'
+        compile 'ch.qos.logback:logback-core:1.1.1'
+        compile 'ch.qos.logback:logback-classic:1.1.1'
+
+        /*
+          This is required by logback confitional processing, for more info please
+          see: http://logback.qos.ch/setup.html#janino
+
+          The org.codehaus.janino:commons-compiler:2.6.1 dependency will be
+          automatically pulled in by Maven's transitivity rules
+        */
+        compile 'org.codehaus.janino:janino:2.6.1'
+
+        // java mail logging
+        compile 'javax.mail:mail:1.4.5'
+
         compile 'com.google.code.findbugs:annotations:2.0.3'
         compile 'com.google.code.findbugs:jsr305:2.0.3'
 
