@@ -1,5 +1,8 @@
 package org.marknode.internal;
 
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
+
 import org.marknode.node.Block;
 import org.marknode.node.FencedCodeBlock;
 import org.marknode.parser.block.AbstractBlockParser;
@@ -9,15 +12,12 @@ import org.marknode.parser.block.BlockStart;
 import org.marknode.parser.block.MatchedBlockParser;
 import org.marknode.parser.block.ParserState;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static org.marknode.internal.util.Escaping.unescapeString;
 
 public class FencedCodeBlockParser extends AbstractBlockParser {
 
-  private static final Pattern OPENING_FENCE = Pattern.compile("^`{3,}(?!.*`)|^~{3,}(?!.*~)");
-  private static final Pattern CLOSING_FENCE = Pattern.compile("^(?:`{3,}|~{3,})(?= *$)");
+  private static final RegExp OPENING_FENCE = RegExp.compile("^`{3,}(?!.*`)|^~{3,}(?!.*~)", "g");
+  private static final RegExp CLOSING_FENCE = RegExp.compile("^(?:`{3,}|~{3,})(?= *$)", "g");
 
   private final FencedCodeBlock block = new FencedCodeBlock();
   private BlockContent content = new BlockContent();
@@ -38,13 +38,14 @@ public class FencedCodeBlockParser extends AbstractBlockParser {
     int nextNonSpace = state.getNextNonSpaceIndex();
     int newIndex = state.getIndex();
     CharSequence line = state.getLine();
-    Matcher matcher = null;
+    MatchResult matcher = null;
+    CLOSING_FENCE.setLastIndex(0);
     boolean matches = (state.getIndent() <= 3 &&
                        nextNonSpace < line.length() &&
                        line.charAt(nextNonSpace) == block.getFenceChar() &&
-                       (matcher = CLOSING_FENCE.matcher(
-                           line.subSequence(nextNonSpace, line.length()))).find());
-    if (matches && matcher.group(0).length() >= block.getFenceLength()) {
+                       (matcher = CLOSING_FENCE.exec(
+                           line.subSequence(nextNonSpace, line.length()).toString())) != null);
+    if (matches && matcher.getGroup(0).length() >= block.getFenceLength()) {
       // closing fence - we're at end of line, so we can finalize now
       return BlockContinue.finished();
     } else {
@@ -89,11 +90,12 @@ public class FencedCodeBlockParser extends AbstractBlockParser {
     public BlockStart tryStart(ParserState state, MatchedBlockParser matchedBlockParser) {
       int nextNonSpace = state.getNextNonSpaceIndex();
       CharSequence line = state.getLine();
-      Matcher matcher;
-      if (state.getIndent() < 4 && (matcher = OPENING_FENCE.matcher(
-          line.subSequence(nextNonSpace, line.length()))).find()) {
-        int fenceLength = matcher.group(0).length();
-        char fenceChar = matcher.group(0).charAt(0);
+      OPENING_FENCE.setLastIndex(0);
+      MatchResult matcher;
+      if (state.getIndent() < 4 && (matcher = OPENING_FENCE.exec(
+          line.subSequence(nextNonSpace, line.length()).toString())) != null) {
+        int fenceLength = matcher.getGroup(0).length();
+        char fenceChar = matcher.getGroup(0).charAt(0);
         FencedCodeBlockParser blockParser = new FencedCodeBlockParser(
             fenceChar, fenceLength, state.getIndent());
         return BlockStart.of(blockParser).atIndex(nextNonSpace + fenceLength);
@@ -103,4 +105,3 @@ public class FencedCodeBlockParser extends AbstractBlockParser {
     }
   }
 }
-
