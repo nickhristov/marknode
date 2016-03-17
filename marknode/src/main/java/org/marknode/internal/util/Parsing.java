@@ -50,8 +50,8 @@ public class Parsing {
   }
 
   public static boolean isLetter(CharSequence s, int index) {
-    int codePoint = Character.codePointAt(s, index);
-    return Character.isLetter(codePoint);
+    char character = s.charAt(index);
+    return Character.isLetter(character);
   }
 
   /**

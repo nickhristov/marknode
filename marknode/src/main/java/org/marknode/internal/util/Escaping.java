@@ -1,9 +1,10 @@
 package org.marknode.internal.util;
 
-import java.nio.charset.Charset;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
+
+import java.io.UnsupportedEncodingException;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Escaping {
 
@@ -11,27 +12,25 @@ public class Escaping {
 
   private static final String ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});";
 
-  private static final Pattern BACKSLASH_OR_AMP = Pattern.compile("[\\\\&]");
+  private static final RegExp BACKSLASH_OR_AMP = RegExp.compile("[\\\\&]", "g");
 
-  private static final Pattern ENTITY_OR_ESCAPED_CHAR =
-      Pattern.compile("\\\\" + ESCAPABLE + '|' + ENTITY, Pattern.CASE_INSENSITIVE);
+  private static final RegExp ENTITY_OR_ESCAPED_CHAR =
+      RegExp.compile("\\\\" + ESCAPABLE + '|' + ENTITY, "gi");
 
   private static final String XML_SPECIAL = "[&<>\"]";
 
-  private static final Pattern XML_SPECIAL_RE = Pattern.compile(XML_SPECIAL);
+  private static final RegExp XML_SPECIAL_RE = RegExp.compile(XML_SPECIAL, "g");
 
-  private static final Pattern XML_SPECIAL_OR_ENTITY =
-      Pattern.compile(ENTITY + '|' + XML_SPECIAL, Pattern.CASE_INSENSITIVE);
+  private static final RegExp XML_SPECIAL_OR_ENTITY =
+      RegExp.compile(ENTITY + '|' + XML_SPECIAL, "gi");
 
-  // From RFC 3986 (see "reserved", "unreserved") except don't escape '[' or ']' to be
-  // compatible with JS encodeURI
-  private static final Pattern ESCAPE_IN_URI =
-      Pattern.compile("(%[a-fA-F0-9]{0,2}|[^:/?#@!$&'()*+,;=a-zA-Z0-9\\-._~])");
+  private static final RegExp ESCAPE_IN_URI =
+      RegExp.compile("(%[a-fA-F0-9]{0,2}|[^:/?#@!$&'()*+,;=a-zA-Z0-9\\-._~])", "g");
 
   private static final char[] HEX_DIGITS =
       new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-  private static final Pattern WHITESPACE = Pattern.compile("[ \t\r\n]+");
+  private static final RegExp WHITESPACE = RegExp.compile("[ \t\r\n]+", "g");
 
   private static final Replacer UNSAFE_CHAR_REPLACER = new Replacer() {
     @Override
@@ -79,7 +78,12 @@ public class Escaping {
           sb.append(input, 1, input.length());
         }
       } else {
-        byte[] bytes = input.getBytes(Charset.forName("UTF-8"));
+        byte[] bytes = new byte[0];
+        try {
+          bytes = input.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+        }
         for (byte b : bytes) {
           sb.append('%');
           sb.append(HEX_DIGITS[(b >> 4) & 0xF]);
@@ -90,7 +94,7 @@ public class Escaping {
   };
 
   public static String escapeHtml(String input, boolean preserveEntities) {
-    Pattern p = preserveEntities ? XML_SPECIAL_OR_ENTITY : XML_SPECIAL_RE;
+    RegExp p = preserveEntities ? XML_SPECIAL_OR_ENTITY : XML_SPECIAL_RE;
     return replaceAll(p, input, UNSAFE_CHAR_REPLACER);
   }
 
@@ -98,7 +102,8 @@ public class Escaping {
    * Replace entities and backslash escapes with literal characters.
    */
   public static String unescapeString(String s) {
-    if (BACKSLASH_OR_AMP.matcher(s).find()) {
+    BACKSLASH_OR_AMP.setLastIndex(0);
+    if (BACKSLASH_OR_AMP.test(s)) {
       return replaceAll(ENTITY_OR_ESCAPED_CHAR, s, UNESCAPE_REPLACER);
     } else {
       return s;
@@ -113,23 +118,38 @@ public class Escaping {
     // Strip '[' and ']', then trim
     String stripped = input.substring(1, input.length() - 1).trim();
     String lowercase = stripped.toLowerCase(Locale.ROOT);
-    return WHITESPACE.matcher(lowercase).replaceAll(" ");
+    return replaceAll(WHITESPACE, lowercase, new Replacer() {
+      @Override
+      public void replace(String input, StringBuilder sb) {
+        sb.append(" ");
+      }
+    });
   }
 
-  private static String replaceAll(Pattern p, String s, Replacer replacer) {
-    Matcher matcher = p.matcher(s);
+  private static String replaceAll(RegExp pattern, String s, Replacer replacer) {
+    // Reset the pattern searcher
+    pattern.setLastIndex(0);
 
-    if (!matcher.find()) {
+    // Matcher matcher = pattern.matcher(s);
+    MatchResult matcher = pattern.exec(s);
+    boolean matchFound = matcher != null;
+
+    if (!matchFound) {
       return s;
     }
 
     StringBuilder sb = new StringBuilder(s.length() + 16);
     int lastEnd = 0;
     do {
-      sb.append(s, lastEnd, matcher.start());
-      replacer.replace(matcher.group(), sb);
-      lastEnd = matcher.end();
-    } while (matcher.find());
+      int matchStart = matcher.getIndex();
+      int matcherEnd = pattern.getLastIndex();
+      sb.append(s, lastEnd, matchStart);
+      replacer.replace(matcher.getGroup(0), sb);
+      lastEnd = matcherEnd;
+
+      matcher = pattern.exec(s);
+      matchFound = matcher != null;
+    } while (matchFound);
 
     if (lastEnd != s.length()) {
       sb.append(s, lastEnd, s.length());

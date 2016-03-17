@@ -17,11 +17,10 @@ public class Html5Entities {
     boolean matchFound = matcher != null; // equivalent to regExp.test(inputStr);
 
     if (matchFound) {
-      int matcherEnd = matcher.getIndex() + matcher.getGroup(0).length();
+      int matcherEnd = pattern.getLastIndex();
       int base = matcherEnd == 2 ? 10 : 16;
       try {
-        int codePoint = Integer
-            .parseInt(input.substring(matcherEnd, input.length() - 1), base);
+        int codePoint = Integer.parseInt(input.substring(matcherEnd, input.length() - 1), base);
         if (codePoint == 0) {
           return "\uFFFD";
         }
