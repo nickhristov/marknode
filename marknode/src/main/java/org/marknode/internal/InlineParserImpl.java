@@ -60,14 +60,12 @@ public class InlineParserImpl implements InlineParser {
   private static final RegExp LINK_DESTINATION = RegExp.compile(
       "^(?:" + REG_CHAR + "+|" + ESCAPED_CHAR + "|\\\\|" + IN_PARENS_NOSP + ")*");
 
-  private static final Pattern LINK_LABEL = Pattern
+  private static final RegExp LINK_LABEL = RegExp
       .compile("^\\[(?:[^\\\\\\[\\]]|" + ESCAPED_CHAR + "|\\\\){0,1000}\\]");
 
-  private static final Pattern ESCAPABLE = Pattern.compile('^' + Escaping.ESCAPABLE);
+  private static final RegExp ESCAPABLE = RegExp.compile('^' + Escaping.ESCAPABLE);
 
-  private static final Pattern
-      ENTITY_HERE =
-      Pattern.compile('^' + ENTITY, Pattern.CASE_INSENSITIVE);
+  private static final RegExp ENTITY_HERE = RegExp.compile('^' + ENTITY, "i");
 
   private static final Pattern TICKS = Pattern.compile("`+");
 
@@ -84,7 +82,7 @@ public class InlineParserImpl implements InlineParser {
 
   private static final Pattern UNICODE_WHITESPACE_CHAR = Pattern.compile("^[\\p{Zs}\t\r\n\f]");
 
-  private static final Pattern WHITESPACE = Pattern.compile("\\s+");
+  private static final RegExp WHITESPACE = RegExp.compile("\\s+");
 
   private static final Pattern FINAL_SPACE = Pattern.compile(" *$");
 
@@ -454,8 +452,7 @@ public class InlineParserImpl implements InlineParser {
     if (peek() == '\n') {
       appendNode(new HardLineBreak());
       index++;
-    } else if (index < input.length() && ESCAPABLE.matcher(input.substring(index, index + 1))
-        .matches()) {
+    } else if (index < input.length() && ESCAPABLE.test(input.substring(index, index + 1))) {
       appendText(input, index, index + 1);
       index++;
     } else {
@@ -465,7 +462,8 @@ public class InlineParserImpl implements InlineParser {
   }
 
   /**
-   * Attempt to parse backticks, adding either a backtick code span or a literal sequence of backticks.
+   * Attempt to parse backticks, adding either a backtick code span or a literal
+   * sequence of backticks.
    */
   private boolean parseBackticks() {
     String ticks = match(TICKS_HERE);
@@ -478,7 +476,7 @@ public class InlineParserImpl implements InlineParser {
       if (matched.equals(ticks)) {
         Code node = new Code();
         String content = input.substring(afterOpenTicks, index - ticks.length());
-        String literal = WHITESPACE.matcher(content.trim()).replaceAll(" ");
+        String literal = content.trim().replaceAll(WHITESPACE.getSource(), " ");
         node.setLiteral(literal);
         appendNode(node);
         return true;
@@ -618,7 +616,7 @@ public class InlineParserImpl implements InlineParser {
       if ((dest = parseLinkDestination()) != null) {
         spnl();
         // title needs a whitespace before
-        if (WHITESPACE.matcher(input.substring(index - 1, index)).matches()) {
+        if (WHITESPACE.test(input.substring(index - 1, index))) {
           title = parseLinkTitle();
           spnl();
         }
