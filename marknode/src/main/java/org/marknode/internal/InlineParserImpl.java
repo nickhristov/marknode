@@ -86,7 +86,7 @@ public class InlineParserImpl implements InlineParser {
 
   private static final Pattern FINAL_SPACE = Pattern.compile(" *$");
 
-  private static final Pattern LINE_END = Pattern.compile("^ *(?:\n|$)");
+  private static final RegExp LINE_END = RegExp.compile("^ *(?:\n|$)");
 
   private final Set<Character> specialCharacters;
   private final Set<Character> delimiterCharacters;
