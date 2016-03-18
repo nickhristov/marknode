@@ -16,15 +16,15 @@ public class HtmlRendererTest {
   public void htmlAllowingShouldNotEscapeInlineHtml() {
     String rendered = htmlAllowingRenderer().render(
         parse("paragraph with <span id='foo' class=\"bar\">inline &amp; html</span>"));
-    assertEquals("<p>paragraph with <span id='foo' class=\"bar\">inline &amp; html</span></p>\n",
-                 rendered);
+    assertEquals(rendered,
+                 "<p>paragraph with <span id='foo' class=\"bar\">inline &amp; html</span></p>\n");
   }
 
   @Test
   public void htmlAllowingShouldNotEscapeBlockHtml() {
     String rendered = htmlAllowingRenderer().render(
         parse("<div id='foo' class=\"bar\">block &amp;</div>"));
-    assertEquals("<div id='foo' class=\"bar\">block &amp;</div>\n", rendered);
+    assertEquals(rendered, "<div id='foo' class=\"bar\">block &amp;</div>\n");
   }
 
   @Test
@@ -32,61 +32,60 @@ public class HtmlRendererTest {
     String rendered = htmlEscapingRenderer().render(
         parse("paragraph with <span id='foo' class=\"bar\">inline &amp; html</span>"));
     // Note that &amp; is not escaped, as it's a normal text node, not part of the inline HTML.
-    assertEquals(
-        "<p>paragraph with &lt;span id='foo' class=&quot;bar&quot;&gt;inline &amp; html&lt;/span&gt;</p>\n",
-        rendered);
+    assertEquals(rendered,
+                 "<p>paragraph with &lt;span id='foo' class=&quot;bar&quot;&gt;inline &amp; html&lt;/span&gt;</p>\n");
   }
 
   @Test
   public void htmlEscapingShouldEscapeHtmlBlocks() {
     String rendered = htmlEscapingRenderer().render(
         parse("<div id='foo' class=\"bar\">block &amp;</div>"));
-    assertEquals("&lt;div id='foo' class=&quot;bar&quot;&gt;block &amp;amp;&lt;/div&gt;\n",
-                 rendered);
+    assertEquals(rendered,
+                 "&lt;div id='foo' class=&quot;bar&quot;&gt;block &amp;amp;&lt;/div&gt;\n");
   }
 
   @Test
   public void textEscaping() {
     String rendered = defaultRenderer().render(parse("escaping: & < > \" '"));
-    assertEquals("<p>escaping: &amp; &lt; &gt; &quot; '</p>\n", rendered);
+    assertEquals(rendered, "<p>escaping: &amp; &lt; &gt; &quot; '</p>\n");
   }
 
   @Test
   public void percendEncodeUrlDisabled() {
-    assertEquals("<p><a href=\"foo&amp;bar\">a</a></p>\n",
-                 defaultRenderer().render(parse("[a](foo&amp;bar)")));
-    assertEquals("<p><a href=\"ä\">a</a></p>\n", defaultRenderer().render(parse("[a](ä)")));
-    assertEquals("<p><a href=\"foo%20bar\">a</a></p>\n",
-                 defaultRenderer().render(parse("[a](foo%20bar)")));
+    assertEquals(defaultRenderer().render(parse("[a](foo&amp;bar)")),
+                 "<p><a href=\"foo&amp;bar\">a</a></p>\n");
+    assertEquals(defaultRenderer().render(parse("[a](ä)")),
+                 "<p><a href=\"ä\">a</a></p>\n");
+    assertEquals(defaultRenderer().render(parse("[a](foo%20bar)")),
+                 "<p><a href=\"foo%20bar\">a</a></p>\n");
   }
 
   @Test
   public void percentEncodeUrl() {
     // Entities are escaped anyway
-    assertEquals("<p><a href=\"foo&amp;bar\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](foo&amp;bar)")));
+    assertEquals(percentEncodingRenderer().render(parse("[a](foo&amp;bar)")),
+                 "<p><a href=\"foo&amp;bar\">a</a></p>\n");
     // Existing encoding is preserved
-    assertEquals("<p><a href=\"foo%20bar\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](foo%20bar)")));
-    assertEquals("<p><a href=\"foo%61\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](foo%61)")));
+    assertEquals(percentEncodingRenderer().render(parse("[a](foo%20bar)")),
+                 "<p><a href=\"foo%20bar\">a</a></p>\n");
+    assertEquals(percentEncodingRenderer().render(parse("[a](foo%61)")),
+                 "<p><a href=\"foo%61\">a</a></p>\n");
     // Invalid encoding is escaped
-    assertEquals("<p><a href=\"foo%25\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](foo%)")));
-    assertEquals("<p><a href=\"foo%25a\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](foo%a)")));
-    assertEquals("<p><a href=\"foo%25a_\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](foo%a_)")));
-    assertEquals("<p><a href=\"foo%25xx\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](foo%xx)")));
+    assertEquals(percentEncodingRenderer().render(parse("[a](foo%)")),
+                 "<p><a href=\"foo%25\">a</a></p>\n");
+    assertEquals(percentEncodingRenderer().render(parse("[a](foo%a)")),
+                 "<p><a href=\"foo%25a\">a</a></p>\n");
+    assertEquals(percentEncodingRenderer().render(parse("[a](foo%a_)")),
+                 "<p><a href=\"foo%25a_\">a</a></p>\n");
+    assertEquals(percentEncodingRenderer().render(parse("[a](foo%xx)")),
+                 "<p><a href=\"foo%25xx\">a</a></p>\n");
     // Reserved characters are preserved, except for '[' and ']'
-    assertEquals("<p><a href=\"!*'();:@&amp;=+$,/?#%5B%5D\">a</a></p>\n",
-                 percentEncodingRenderer().render(parse("[a](!*'();:@&=+$,/?#[])")));
+    assertEquals(percentEncodingRenderer().render(parse("[a](!*'();:@&=+$,/?#[])")),
+                 "<p><a href=\"!*'();:@&amp;=+$,/?#%5B%5D\">a</a></p>\n");
     // Unreserved characters are preserved
-    assertEquals(
-        "<p><a href=\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~\">a</a></p>\n",
-        percentEncodingRenderer().render(
-            parse("[a](ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~)")));
+    assertEquals(percentEncodingRenderer().render(
+        parse("[a](ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~)")),
+                 "<p><a href=\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~\">a</a></p>\n");
     // Other characters are percent-encoded (LATIN SMALL LETTER A WITH DIAERESIS)
     assertEquals("<p><a href=\"%C3%A4\">a</a></p>\n",
                  percentEncodingRenderer().render(parse("[a](ä)")));

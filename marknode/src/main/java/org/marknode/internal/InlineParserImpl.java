@@ -1,22 +1,24 @@
 package org.marknode.internal;
 
 import com.google.common.collect.Sets;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 
+import org.marknode.internal.inline.AsteriskDelimiterProcessor;
 import org.marknode.internal.inline.UnderscoreDelimiterProcessor;
 import org.marknode.internal.util.Escaping;
 import org.marknode.internal.util.Html5Entities;
 import org.marknode.internal.util.Parsing;
+import org.marknode.node.Code;
+import org.marknode.node.HardLineBreak;
 import org.marknode.node.HtmlInline;
 import org.marknode.node.Image;
 import org.marknode.node.Link;
-import org.marknode.node.Text;
-import org.marknode.parser.InlineParser;
-import org.marknode.internal.inline.AsteriskDelimiterProcessor;
-import org.marknode.node.Code;
-import org.marknode.node.HardLineBreak;
 import org.marknode.node.Node;
 import org.marknode.node.SoftLineBreak;
+import org.marknode.node.Text;
 import org.marknode.parser.DelimiterProcessor;
+import org.marknode.parser.InlineParser;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,22 +44,20 @@ public class InlineParserImpl implements InlineParser {
 
   private static final String
       ASCII_PUNCTUATION = "'!\"#\\$%&\\(\\)\\*\\+,\\-\\./:;<=>\\?@\\[\\\\\\]\\^_`\\{\\|\\}~";
-  private static final Pattern PUNCTUATION = Pattern
+  private static final RegExp PUNCTUATION = RegExp
       .compile("^[" + ASCII_PUNCTUATION + "\\p{Pc}\\p{Pd}\\p{Pe}\\p{Pf}\\p{Pi}\\p{Po}\\p{Ps}]");
 
-  private static final Pattern HTML_TAG = Pattern.compile('^' + HTMLTAG, Pattern.CASE_INSENSITIVE);
+  private static final RegExp HTML_TAG = RegExp.compile('^' + HTMLTAG);
 
-  private static final Pattern LINK_TITLE = Pattern.compile(
+  private static final RegExp LINK_TITLE = RegExp.compile(
       "^(?:\"(" + ESCAPED_CHAR + "|[^\"\\x00])*\"" +
-      '|' +
-      "'(" + ESCAPED_CHAR + "|[^'\\x00])*'" +
-      '|' +
-      "\\((" + ESCAPED_CHAR + "|[^)\\x00])*\\))");
+      '|' + "'(" + ESCAPED_CHAR + "|[^'\\x00])*'" +
+      '|' + "\\((" + ESCAPED_CHAR + "|[^)\\x00])*\\))");
 
-  private static final Pattern LINK_DESTINATION_BRACES = Pattern.compile(
+  private static final RegExp LINK_DESTINATION_BRACES = RegExp.compile(
       "^(?:[<](?:[^<> \\t\\n\\\\\\x00]" + '|' + ESCAPED_CHAR + '|' + "\\\\)*[>])");
 
-  private static final Pattern LINK_DESTINATION = Pattern.compile(
+  private static final RegExp LINK_DESTINATION = RegExp.compile(
       "^(?:" + REG_CHAR + "+|" + ESCAPED_CHAR + "|\\\\|" + IN_PARENS_NOSP + ")*");
 
   private static final Pattern LINK_LABEL = Pattern
@@ -360,7 +360,8 @@ public class InlineParserImpl implements InlineParser {
   }
 
   /**
-   * If RE matches at current index in the input, advance index and return the match; otherwise return null.
+   * If RE matches at current index in the input, advance index and return the match;
+   * otherwise return null.
    */
   private String match(Pattern re) {
     if (index >= input.length()) {
@@ -372,6 +373,21 @@ public class InlineParserImpl implements InlineParser {
     if (m) {
       index = matcher.end();
       return matcher.group();
+    } else {
+      return null;
+    }
+  }
+
+  private String match(RegExp re) {
+    if (index >= input.length()) {
+      return null;
+    }
+    String region = input.substring(index, input.length());
+    MatchResult matcher = re.exec(region);
+    boolean m = matcher != null;
+    if (m) {
+      index = index + matcher.getGroup(0).length();
+      return matcher.getGroup(0);
     } else {
       return null;
     }
@@ -820,9 +836,9 @@ public class InlineParserImpl implements InlineParser {
                    String.valueOf(charAfter);
 
     // We could be more lazy here, in most cases we don't need to do every match case.
-    boolean beforeIsPunctuation = PUNCTUATION.matcher(before).matches();
+    boolean beforeIsPunctuation = PUNCTUATION.test(before);
     boolean beforeIsWhitespace = UNICODE_WHITESPACE_CHAR.matcher(before).matches();
-    boolean afterIsPunctuation = PUNCTUATION.matcher(after).matches();
+    boolean afterIsPunctuation = PUNCTUATION.test(after);
     boolean afterIsWhitespace = UNICODE_WHITESPACE_CHAR.matcher(after).matches();
 
     boolean leftFlanking = !afterIsWhitespace &&
