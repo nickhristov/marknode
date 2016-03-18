@@ -71,16 +71,16 @@ public class InlineParserImpl implements InlineParser {
 
   private static final Pattern TICKS_HERE = Pattern.compile("^`+");
 
-  private static final Pattern EMAIL_AUTOLINK = Pattern
+  private static final RegExp EMAIL_AUTOLINK = RegExp
       .compile(
           "^<([a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)>");
 
-  private static final Pattern AUTOLINK = Pattern
+  private static final RegExp AUTOLINK = RegExp
       .compile("^<[a-zA-Z][a-zA-Z0-9.+-]{1,31}:[^<>\u0000-\u0020]*>");
 
-  private static final Pattern SPNL = Pattern.compile("^ *(?:\n *)?");
+  private static final RegExp SPNL = RegExp.compile("^ *(?:\n *)?");
 
-  private static final Pattern UNICODE_WHITESPACE_CHAR = Pattern.compile("^[\\p{Zs}\t\r\n\f]");
+  private static final RegExp UNICODE_WHITESPACE_CHAR = RegExp.compile("^[\\p{Zs}\t\r\n\f]");
 
   private static final RegExp WHITESPACE = RegExp.compile("\\s+");
 
@@ -381,11 +381,13 @@ public class InlineParserImpl implements InlineParser {
       return null;
     }
     String region = input.substring(index, input.length());
+    re.setLastIndex(0);
     MatchResult matcher = re.exec(region);
     boolean m = matcher != null;
     if (m) {
-      index = index + matcher.getGroup(0).length();
-      return matcher.getGroup(0);
+      final String matched = matcher.getGroup(0);
+      index = index + matched.length();
+      return matched;
     } else {
       return null;
     }
@@ -835,9 +837,9 @@ public class InlineParserImpl implements InlineParser {
 
     // We could be more lazy here, in most cases we don't need to do every match case.
     boolean beforeIsPunctuation = PUNCTUATION.test(before);
-    boolean beforeIsWhitespace = UNICODE_WHITESPACE_CHAR.matcher(before).matches();
+    boolean beforeIsWhitespace = UNICODE_WHITESPACE_CHAR.test(before);
     boolean afterIsPunctuation = PUNCTUATION.test(after);
-    boolean afterIsWhitespace = UNICODE_WHITESPACE_CHAR.matcher(after).matches();
+    boolean afterIsWhitespace = UNICODE_WHITESPACE_CHAR.test(after);
 
     boolean leftFlanking = !afterIsWhitespace &&
                            !(afterIsPunctuation && !beforeIsWhitespace && !beforeIsPunctuation);
