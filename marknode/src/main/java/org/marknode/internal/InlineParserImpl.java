@@ -84,7 +84,7 @@ public class InlineParserImpl implements InlineParser {
 
   private static final RegExp WHITESPACE = RegExp.compile("\\s+");
 
-  private static final Pattern FINAL_SPACE = Pattern.compile(" *$");
+  private static final RegExp FINAL_SPACE = RegExp.compile(" *$");
 
   private static final RegExp LINE_END = RegExp.compile("^ *(?:\n|$)");
 
@@ -428,8 +428,8 @@ public class InlineParserImpl implements InlineParser {
         .endsWith(" ")) {
       Text text = (Text) lastChild;
       String literal = text.getLiteral();
-      Matcher matcher = FINAL_SPACE.matcher(literal);
-      int spaces = matcher.find() ? matcher.end() - matcher.start() : 0;
+      MatchResult matcher = FINAL_SPACE.exec(literal);
+      int spaces = matcher != null ? matcher.getGroup(0).length() : 0;
       if (spaces > 0) {
         text.setLiteral(literal.substring(0, literal.length() - spaces));
       }
