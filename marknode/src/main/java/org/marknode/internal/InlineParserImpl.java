@@ -25,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class InlineParserImpl implements InlineParser {
 
@@ -67,7 +65,7 @@ public class InlineParserImpl implements InlineParser {
 
   private static final RegExp ENTITY_HERE = RegExp.compile('^' + ENTITY, "i");
 
-  private static final Pattern TICKS = Pattern.compile("`+");
+  private static final RegExp TICKS = RegExp.compile("`+");
 
   private static final RegExp TICKS_HERE = RegExp.compile("^`+");
 
@@ -361,21 +359,6 @@ public class InlineParserImpl implements InlineParser {
    * If RE matches at current index in the input, advance index and return the match;
    * otherwise return null.
    */
-  private String match(Pattern re) {
-    if (index >= input.length()) {
-      return null;
-    }
-    Matcher matcher = re.matcher(input);
-    matcher.region(index, input.length());
-    boolean m = matcher.find();
-    if (m) {
-      index = matcher.end();
-      return matcher.group();
-    } else {
-      return null;
-    }
-  }
-
   private String match(RegExp re) {
     if (index >= input.length()) {
       return null;
@@ -386,7 +369,7 @@ public class InlineParserImpl implements InlineParser {
     boolean m = matcher != null;
     if (m) {
       final String matched = matcher.getGroup(0);
-      index = index + matched.length();
+      index = index + matcher.getIndex() + matched.length();
       return matched;
     } else {
       return null;
