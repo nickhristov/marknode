@@ -19,12 +19,11 @@ import org.marknode.parser.block.ParserState;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class TableBlockParser extends AbstractBlockParser {
 
   private static String COL = "\\s*:?-{3,}:?\\s*";
-  private static Pattern TABLE_HEADER_SEPARATOR = Pattern.compile(
+  private static RegExp TABLE_HEADER_SEPARATOR = RegExp.compile(
       // For single column, require at least one pipe, otherwise it's ambiguous with setext headers
       "\\|" + COL + "\\|?\\s*" + "|" + COL + "\\|\\s*" + "|" +
       "\\|?" + "(?:" + COL + "\\|)+" + COL + "\\|?\\s*");
@@ -171,7 +170,7 @@ public class TableBlockParser extends AbstractBlockParser {
       if (paragraph != null && paragraph.toString().contains("|") && !paragraph.toString()
           .contains("\n")) {
         CharSequence separatorLine = line.subSequence(state.getIndex(), line.length());
-        if (TABLE_HEADER_SEPARATOR.matcher(separatorLine).matches()) {
+        if (separatorLine.toString().matches(TABLE_HEADER_SEPARATOR.getSource())) {
           List<String> headParts = split(paragraph);
           List<String> separatorParts = split(separatorLine);
           if (separatorParts.size() >= headParts.size()) {
