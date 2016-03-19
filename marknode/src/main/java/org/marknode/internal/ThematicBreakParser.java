@@ -1,20 +1,20 @@
 package org.marknode.internal;
 
 
+import com.google.gwt.regexp.shared.RegExp;
+
 import org.marknode.node.Block;
+import org.marknode.node.ThematicBreak;
 import org.marknode.parser.block.AbstractBlockParser;
 import org.marknode.parser.block.AbstractBlockParserFactory;
 import org.marknode.parser.block.BlockContinue;
+import org.marknode.parser.block.BlockStart;
 import org.marknode.parser.block.MatchedBlockParser;
 import org.marknode.parser.block.ParserState;
-import org.marknode.node.ThematicBreak;
-import org.marknode.parser.block.BlockStart;
-
-import java.util.regex.Pattern;
 
 public class ThematicBreakParser extends AbstractBlockParser {
 
-  private static Pattern PATTERN = Pattern.compile("^(?:(?:\\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$");
+  private static RegExp PATTERN = RegExp.compile("^(?:(?:\\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$");
 
   private final ThematicBreak block = new ThematicBreak();
 
@@ -38,7 +38,7 @@ public class ThematicBreakParser extends AbstractBlockParser {
       }
       int nextNonSpace = state.getNextNonSpaceIndex();
       CharSequence line = state.getLine();
-      if (PATTERN.matcher(line.subSequence(nextNonSpace, line.length())).matches()) {
+      if (PATTERN.test(line.subSequence(nextNonSpace, line.length()).toString())) {
         return BlockStart.of(new ThematicBreakParser()).atIndex(line.length());
       } else {
         return BlockStart.none();

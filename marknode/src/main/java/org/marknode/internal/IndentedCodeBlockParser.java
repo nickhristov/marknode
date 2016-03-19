@@ -1,15 +1,22 @@
 package org.marknode.internal;
 
-import org.marknode.node.*;
-import org.marknode.parser.block.*;
+import com.google.gwt.regexp.shared.RegExp;
 
-import java.util.regex.Pattern;
+import org.marknode.node.Block;
+import org.marknode.node.IndentedCodeBlock;
+import org.marknode.node.Paragraph;
+import org.marknode.parser.block.AbstractBlockParser;
+import org.marknode.parser.block.AbstractBlockParserFactory;
+import org.marknode.parser.block.BlockContinue;
+import org.marknode.parser.block.BlockStart;
+import org.marknode.parser.block.MatchedBlockParser;
+import org.marknode.parser.block.ParserState;
 
 public class IndentedCodeBlockParser extends AbstractBlockParser {
 
   public static int INDENT = 4;
 
-  private static final Pattern TRAILING_BLANK_LINES = Pattern.compile("(?:\n[ \t]*)+$");
+  private static final RegExp TRAILING_BLANK_LINES = RegExp.compile("(?:\n[ \t]*)+$");
 
   private final IndentedCodeBlock block = new IndentedCodeBlock();
   private BlockContent content = new BlockContent();
@@ -42,7 +49,7 @@ public class IndentedCodeBlockParser extends AbstractBlockParser {
     String contentString = content.getString();
     content = null;
 
-    String literal = TRAILING_BLANK_LINES.matcher(contentString).replaceFirst("\n");
+    String literal = TRAILING_BLANK_LINES.replace(contentString, "\n");
     block.setLiteral(literal);
   }
 

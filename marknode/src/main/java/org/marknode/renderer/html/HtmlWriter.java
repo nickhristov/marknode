@@ -1,16 +1,17 @@
 package org.marknode.renderer.html;
 
+import com.google.gwt.regexp.shared.RegExp;
+
 import org.marknode.internal.util.Escaping;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class HtmlWriter {
 
   private static final Map<String, String> NO_ATTRIBUTES = Collections.emptyMap();
-  private static final Pattern HTML_TAG_PATTERN = Pattern.compile("<[^>]*>");
+  private static final RegExp HTML_TAG_PATTERN = RegExp.compile("<[^>]*>");
 
   private final Appendable buffer;
   private int nesting = 0;
@@ -24,7 +25,7 @@ public class HtmlWriter {
     if (isTagAllowed()) {
       append(s);
     } else {
-      append(HTML_TAG_PATTERN.matcher(s).replaceAll(""));
+      append(s.replaceAll(HTML_TAG_PATTERN.getSource(), ""));
     }
   }
 

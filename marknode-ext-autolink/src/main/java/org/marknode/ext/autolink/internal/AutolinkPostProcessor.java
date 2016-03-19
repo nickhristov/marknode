@@ -1,5 +1,7 @@
 package org.marknode.ext.autolink.internal;
 
+import com.google.common.collect.Sets;
+
 import org.marknode.ext.autolink.LinkExtractor;
 import org.marknode.ext.autolink.LinkSpan;
 import org.marknode.ext.autolink.LinkType;
@@ -9,12 +11,10 @@ import org.marknode.node.Node;
 import org.marknode.node.Text;
 import org.marknode.parser.PostProcessor;
 
-import java.util.EnumSet;
-
 public class AutolinkPostProcessor implements PostProcessor {
 
   private LinkExtractor linkExtractor = LinkExtractor.builder()
-      .linkTypes(EnumSet.of(LinkType.URL, LinkType.EMAIL))
+      .linkTypes(Sets.newHashSet(LinkType.URL, LinkType.EMAIL))
       .build();
 
   @Override

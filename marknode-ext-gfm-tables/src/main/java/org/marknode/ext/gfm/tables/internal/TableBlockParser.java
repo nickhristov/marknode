@@ -1,5 +1,7 @@
 package org.marknode.ext.gfm.tables.internal;
 
+import com.google.gwt.regexp.shared.RegExp;
+
 import org.marknode.ext.gfm.tables.TableBlock;
 import org.marknode.ext.gfm.tables.TableBody;
 import org.marknode.ext.gfm.tables.TableCell;
@@ -24,8 +26,7 @@ public class TableBlockParser extends AbstractBlockParser {
   private static String COL = "\\s*:?-{3,}:?\\s*";
   private static Pattern TABLE_HEADER_SEPARATOR = Pattern.compile(
       // For single column, require at least one pipe, otherwise it's ambiguous with setext headers
-      "\\|" + COL + "\\|?\\s*" + "|" +
-      COL + "\\|\\s*" + "|" +
+      "\\|" + COL + "\\|?\\s*" + "|" + COL + "\\|\\s*" + "|" +
       "\\|?" + "(?:" + COL + "\\|)+" + COL + "\\|?\\s*");
 
   private final TableBlock block = new TableBlock();
