@@ -69,7 +69,7 @@ public class InlineParserImpl implements InlineParser {
 
   private static final Pattern TICKS = Pattern.compile("`+");
 
-  private static final Pattern TICKS_HERE = Pattern.compile("^`+");
+  private static final RegExp TICKS_HERE = RegExp.compile("^`+");
 
   private static final RegExp EMAIL_AUTOLINK = RegExp
       .compile(
