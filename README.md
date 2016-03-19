@@ -1,11 +1,8 @@
-# MarkNode
+# About MarkNode
 
-## Specification
+A Java implementation of [CommonMark specification](http://commonmark.org/) forked from [commonmark-java](https://github.com/atlassian/commonmark-java).
 
-A Java implementation of [CommonMark specification](http://commonmark.org/).
+Two major changes:
 
-## Test Suite
-
-* [https://github.com/michelf/mdtest]
-* [https://github.com/michelf/mdtest/blob/master/Readme.md]
-
+* Replaced Maven with Gradle
+* Modified code to add GWT support, which means the same API can be used on both client side and server side.
